@@ -1,0 +1,7 @@
+/*
+!/src
+!.gitignore
+/src/*
+!/src/internet
+/src/internet/*
+!/src/internet/model
