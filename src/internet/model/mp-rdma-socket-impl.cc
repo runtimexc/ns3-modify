@@ -90,7 +90,7 @@
 #define PKT_QUOTA 100
 
 //lyj add
-#define SENDER_RETX    1
+#define SENDER_RETX    0
 
 namespace ns3 {
 
@@ -105,7 +105,7 @@ MpRDMASocketImpl::GetTypeId (void)
     .SetParent<MpRDMASocket> ()
     .SetGroupName ("Internet")
     .AddConstructor<MpRDMASocketImpl> ()
-//    .AddAttribute ("MpRDMAState", "State in MP-RDMA state machine",
+//    .AddAttribute ("MpRDMA    mState", "State in MP-RDMA state machine",
 //                   TypeId::ATTR_GET,
 //                   EnumValue (CLOSED),
 //                   MakeEnumAccessor (&MpRDMASocketImpl::m_state),
@@ -1902,7 +1902,7 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
   {
       m_bSendPkt = false;
 
-      /* update OOP, OOL */
+      /* update OOP, OOL */ 
       if(ackNumber > m_ooP)
       {
           m_ooP = ackNumber;
