@@ -1,6 +1,7 @@
 /*
 !/src
 !/exp
+!/scratch
 !.gitignore
 /src/*
 !/src/internet
@@ -8,6 +9,8 @@
 !/src/topology
 /exp/*
 !/exp/leaf-spine
+/scratch/*
+!/scratch/mp_rdma_leaf_spine
 /src/internet/*
 /src/net-routing/*
 /src/topology/*
@@ -23,3 +26,5 @@
 !/exp/leaf-spine/ooo/real_trace.tr
 /src/topology/model/*
 !/src/topology/model/leaf-spine-topology-helper.cc
+!/src/topology/model/leaf-spine-topology-helper.h
+
