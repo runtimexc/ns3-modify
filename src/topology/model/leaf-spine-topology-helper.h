@@ -30,6 +30,7 @@ namespace ns3
 
         double m_serverToLeafDelay; 
         double m_leafToSpineDelay; 
+        uint32_t m_diff;
 
         bool m_varyCapacity; 
 

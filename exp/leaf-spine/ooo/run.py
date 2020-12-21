@@ -26,6 +26,7 @@ leafToSpineECN2 = [54]
 
 serverToLeafDelay = 2.0
 leafToSpineDelay = 2.0
+diffbetweenpath = 1
 
 #wsq
 #leafToSpineDelay1=2.0
@@ -106,6 +107,7 @@ def run_exp(id, alg):
                                                              '--cmd_leafToSpineECN2=%d' % leafToSpineECN2[index], 
                                                              '--cmd_serverToLeafDelay=%lf' % serverToLeafDelay, 
                                                              '--cmd_leafToSpineDelay=%lf' % leafToSpineDelay,
+                                                             '--cmd_diff=%d' % diffbetweenpath,
                                                              '--cmd_rcvL=%d' % rL,
                                                              '--cmd_sndL=%d' % sL,
                                                              '--cmd_special_link_delay=%lf' % special_link_delay,

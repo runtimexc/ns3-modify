@@ -228,6 +228,7 @@ int main(int argc, char *argv[])
 
     double serverToLeafDelay = 2.0; //us
     double leafToSpineDelay = 2.0; //us 
+    uint32_t diff = 1;
 
     bool varyCapacity = false;
 
@@ -261,6 +262,7 @@ int main(int argc, char *argv[])
     cmd.AddValue("cmd_leafToSpineECN2", "leaf to spine ECN 2", leafToSpineECNThresh2); 
     cmd.AddValue("cmd_serverToLeafDelay", "server to leaf delay", serverToLeafDelay); 
     cmd.AddValue("cmd_leafToSpineDelay", "leaf to spine delay", leafToSpineDelay);
+    cmd.AddValue("cmd_diff","diff between path",diff);
     cmd.AddValue("cmd_varyCapacity", "vary the capacity of topology", varyCapacity); 
     cmd.AddValue("cmd_trafficPattern", "traffic pattern to test", traffic_pattern); 
     cmd.AddValue("cmd_traceFile", "trace file to test", trace_file); 
@@ -345,6 +347,7 @@ int main(int argc, char *argv[])
 
     topology->SetAttribute("ServerToLeafDelay", DoubleValue(serverToLeafDelay)); 
     topology->SetAttribute("LeafToSpineDelay", DoubleValue(leafToSpineDelay)); 
+    topology->SetAttribute("Diff", UintegerValue(diff));
     
     topology->SetAttribute("VaryCapacity", BooleanValue(varyCapacity)); 
 

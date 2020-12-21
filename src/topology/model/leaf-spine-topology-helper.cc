@@ -39,7 +39,9 @@ namespace ns3
             .AddAttribute("ServerToLeafDelay", "The delay of server to leaf link. ", 
                           DoubleValue(1.5), MakeDoubleAccessor(&LeafSpineTopologyHelper::m_serverToLeafDelay), MakeDoubleChecker<double>())  
             .AddAttribute("LeafToSpineDelay", "The delay of leaf to spine link. ",  
-                          DoubleValue(1.5), MakeDoubleAccessor(&LeafSpineTopologyHelper::m_leafToSpineDelay), MakeDoubleChecker<double>())  
+                          DoubleValue(1.5), MakeDoubleAccessor(&LeafSpineTopologyHelper::m_leafToSpineDelay), MakeDoubleChecker<double>())
+            .AddAttribute("Diff", "The diff between path",
+                          UintegerValue(1),MakeUintegerAccessor(&LeafSpineTopologyHelper::m_diff), MakeUintegerChecker<uint32_t>())  
             .AddAttribute("VaryCapacity", "To vary the capacity of leaf to spine link or not. ", 
                           BooleanValue(false), MakeBooleanAccessor(&LeafSpineTopologyHelper::m_varyCapacity), MakeBooleanChecker());   
             
@@ -82,7 +84,7 @@ namespace ns3
         
         PointToPointHelper leafToSpineLinkHelper2;
         leafToSpineLinkHelper2.SetDeviceAttribute ("DataRate", StringValue (m_leafToSpineRate2)); 
-        leafToSpineLinkHelper2.SetChannelAttribute ("Delay", TimeValue (MicroSeconds (m_leafToSpineDelay*6))); 
+        leafToSpineLinkHelper2.SetChannelAttribute ("Delay", TimeValue (MicroSeconds (m_leafToSpineDelay*m_diff))); 
         leafToSpineLinkHelper2.SetDeviceAttribute ("ECNThresh", UintegerValue (m_leafToSpineECNThresh2)); 
         leafToSpineLinkHelper2.SetDeviceAttribute ("TerminalNum", UintegerValue (srv_num));
 
