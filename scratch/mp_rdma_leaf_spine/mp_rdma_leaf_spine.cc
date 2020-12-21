@@ -154,13 +154,14 @@ void OnFlowFinished(Ptr<const PacketSink> sink)
 {
     finished_flow_num++;
 
-    printf("wsqfinished %u, sink start time %lf, bulk start time %lf, flow duration: %lf, average througput %lf Mbps\n", 
+    printf("wsqfinished %u, sink start time %lf, bulk start time %lf, flow duration: %lf, average througput %lf Mbps,recv %d\n", 
             finished_flow_num,
             sink->GetFlowStartTime(),
             pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime(),
             //Simulator::Now().GetSeconds() - sink->GetFlowStartTime(),
             Simulator::Now().GetSeconds() - pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime(),
-            sink->GetTotalRx() * 0.001 * 0.008 / (Simulator::Now().GetSeconds() - pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime()));
+            sink->GetTotalRx() * 0.001 * 0.008 / (Simulator::Now().GetSeconds() - pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime()),
+            sink->GetTotalRx());
 
     LogManager::WriteLog(1, "%lf, %lf, %u\n",
                         //Simulator::Now().GetSeconds() - sink->GetFlowStartTime(),
