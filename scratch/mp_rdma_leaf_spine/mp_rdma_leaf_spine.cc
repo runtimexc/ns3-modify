@@ -17,7 +17,7 @@ using namespace ns3;
 
 //uint32_t maxBytes = 100000; //100MB
 uint32_t maxBytes = 0; //infinity 
-double stopTime = 10000;//wsq modify 0.5 to 0.1
+double stopTime = 1;//wsq modify 0.5 to 0.1
 //double stopTime = 30; 
 uint32_t flowNum = 1;
 uint32_t finished_flow_num = 0;

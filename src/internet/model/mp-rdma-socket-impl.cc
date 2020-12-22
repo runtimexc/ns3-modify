@@ -72,7 +72,7 @@
 #define CA_STATE 1 
 
 #define MINIMAL 1
-#define lyj_print 1
+#define lyj_print 0
 #define ENABLE_AACK 0
 
 #define L_RATIO     0.5
@@ -1967,7 +1967,11 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           SequenceNumber32 new_head = SequenceNumber32(aackTag.aackSeq);
           //lyj add
           if(new_head > m_nextTxSequence){
-            m_nextTxSequence = (m_nextTxSequence-m_txBuffer->HeadSequence ())+new_head;
+            //lyj origin
+            // m_nextTxSequence = (m_nextTxSequence-m_txBuffer->HeadSequence ())+new_head;
+            // m_ooP = m_nextTxSequence - m_tcb->m_segmentSize;
+            // m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
+            m_nextTxSequence = new_head;
             m_ooP = m_nextTxSequence - m_tcb->m_segmentSize;
             m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
           }
