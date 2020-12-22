@@ -4404,7 +4404,7 @@ MpRDMASocketImpl::MacroTimeout ()
 {
   NS_LOG_FUNCTION (this);
 //wsq
-  printf("at node %u, time %lf, Macro TimeOut happened, sndL %u, rcvL %u\n", GetNode()->GetId(), Simulator::Now().GetSeconds(), m_sndL, m_rcvL);
+  //printf("at node %u, time %lf, Macro TimeOut happened, sndL %u, rcvL %u\n", GetNode()->GetId(), Simulator::Now().GetSeconds(), m_sndL, m_rcvL);
   
   //printf("dump the sack map, cWnd %u, pipe %u, highreTx %u, AACK %u, fastthresh %u\n", 
          // m_tcb->m_cWnd.Get(), m_pipe, m_highReTxMark.GetValue(), m_aackSeq, m_fastRecoveryThreshold); 
