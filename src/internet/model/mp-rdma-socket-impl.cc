@@ -2066,14 +2066,18 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
                     MpRDMASend();
                   }
                   else{
-                      /* yuanwei patch 2 */
+                      /* lyj patch */
                       SequenceNumber32 toTxSeq; 
                       toTxSeq = m_nextTxSequence.Get(); 
-
-                      uint32_t s = m_tcb->m_segmentSize;  
-                      uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
-
-                      m_nextTxSequence += sz;
+                      // identify nextsend no more than rec+L,should send first pkt to move
+                      uint32_t s = m_tcb->m_segmentSize; 
+                      if(toTxSeq == ackNumber){
+                        toTxSeq = m_txBuffer->HeadSequence();
+                        uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
+                      }else{
+                        uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
+                        m_nextTxSequence += sz;
+                      }
                   }
 #else
                   //MpRDMASend();
@@ -2081,17 +2085,23 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
                   
                   
                   /* yuanwei patch 2 */
-                  SequenceNumber32 toTxSeq; 
-                  toTxSeq = m_nextTxSequence.Get(); 
-
-                  uint32_t s = m_tcb->m_segmentSize;  
-                  //lyj debug
-                  // if(s == 0){
-                  //   printf("%s %d\n",__FUNCTION__,__LINE__);
-                  // }
-                  uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
-
-                  m_nextTxSequence += sz;
+                  // SequenceNumber32 toTxSeq; 
+                  // toTxSeq = m_nextTxSequence.Get(); 
+                  // uint32_t s = m_tcb->m_segmentSize;  
+                  // uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
+                  // m_nextTxSequence += sz;
+                  /* lyj patch */
+                      SequenceNumber32 toTxSeq; 
+                      toTxSeq = m_nextTxSequence.Get(); 
+                      // identify nextsend no more than rec+L,should send first pkt to move
+                      uint32_t s = m_tcb->m_segmentSize; 
+                      if(toTxSeq == ackNumber){
+                        toTxSeq = m_txBuffer->HeadSequence();
+                        uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
+                      }else{
+                        uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
+                        m_nextTxSequence += sz;
+                      }
 #endif
 
 
@@ -4390,7 +4400,7 @@ MpRDMASocketImpl::MacroTimeout ()
 {
   NS_LOG_FUNCTION (this);
 //wsq
-  //printf("at node %u, time %lf, Macro TimeOut happened, sndL %u, rcvL %u\n", GetNode()->GetId(), Simulator::Now().GetSeconds(), m_sndL, m_rcvL);
+  printf("at node %u, time %lf, Macro TimeOut happened, sndL %u, rcvL %u\n", GetNode()->GetId(), Simulator::Now().GetSeconds(), m_sndL, m_rcvL);
   
   //printf("dump the sack map, cWnd %u, pipe %u, highreTx %u, AACK %u, fastthresh %u\n", 
          // m_tcb->m_cWnd.Get(), m_pipe, m_highReTxMark.GetValue(), m_aackSeq, m_fastRecoveryThreshold); 
@@ -4422,9 +4432,10 @@ MpRDMASocketImpl::MacroTimeout ()
    //LYJ debug
   //printf("in MARCOTIME :update snd.nxt to %u\n",m_nextTxSequence.Get().GetValue());
   m_pipe = 0;
-
-  m_highReTxMark = SequenceNumber32(0); 
-
+  //origin code
+  //m_highReTxMark = SequenceNumber32(0); 
+  //lyj debug: begin from nack
+  m_highReTxMark = m_nextTxSequence;
   //if (m_sendPendingDataEvent.IsRunning ())
   //{
   //    m_sendPendingDataEvent.Cancel(); 

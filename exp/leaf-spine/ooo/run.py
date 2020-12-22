@@ -30,7 +30,7 @@ leafToSpineECN2 = [54]
 serverToLeafDelay = 2.0
 leafToSpineDelay = 2.0
 #diffbetweenpath = [2, 3, 4, 5, 6, 10, 15]
-diffbetweenpath = [3]
+diffbetweenpath = [15]
 #wsq
 #leafToSpineDelay1=2.0
 #leafToSpineDelay2=2.0
