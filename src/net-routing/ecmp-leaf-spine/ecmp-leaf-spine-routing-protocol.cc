@@ -279,11 +279,11 @@ namespace ns3
                 {
                     drop_count++; 
 
-                    printf(" ============= at node %u, drop %u packet, size %u, seq %u, IsReTx %u, dest %u\n", 
-                            //GetNode()->GetId(), drop_count, p->GetSize(), l4H.GetSequenceNumber().GetValue()); 
-                            GetNode()->GetId(), drop_count, p->GetSize(), l4H.GetSequenceNumber().GetValue(),
-                            (drop_seq.find(l4H.GetSequenceNumber().GetValue()) != drop_seq.end()), 
-                            header.dest); 
+                    // printf(" ============= at node %u, drop %u packet, size %u, seq %u, IsReTx %u, dest %u\n", 
+                    //         //GetNode()->GetId(), drop_count, p->GetSize(), l4H.GetSequenceNumber().GetValue()); 
+                    //         GetNode()->GetId(), drop_count, p->GetSize(), l4H.GetSequenceNumber().GetValue(),
+                    //         (drop_seq.find(l4H.GetSequenceNumber().GetValue()) != drop_seq.end()), 
+                    //         header.dest); 
 
                     drop_seq[l4H.GetSequenceNumber().GetValue()] = 1; 
 

@@ -8,7 +8,10 @@ import time
 import datetime
 import threading
 import curses
+import signal
 
+def myhandler(signal,frame):
+    os._exit(0)
 
 algnames = ["none", "LeafSpine"]
 Algs = [1]
@@ -26,7 +29,7 @@ leafToSpineECN2 = [54]
 
 serverToLeafDelay = 2.0
 leafToSpineDelay = 2.0
-diffbetweenpath = 3
+diffbetweenpath = [2, 3, 4, 5, 6, 10, 15]
 
 #wsq
 #leafToSpineDelay1=2.0
@@ -43,8 +46,8 @@ special_rate4 = ["10Gbps", "80Gbps"]
 
 #sndL = [16, 32, 48, 64, 80, 96, 112, 128, 256, 512, 1024]
 #sndL = [32]
-sndL = [22]
-rcvL = [40]
+sndL = [32]
+rcvL = [32, 40, 48, 52, 56, 58, 60, 62, 64, 66, 68]
 
 #sndL = [32]
 #rcvL = [64]
@@ -61,13 +64,14 @@ deltaT = [0]
 
 load = 0.4
 
-traffic_pattern = [0]
+traffic_pattern = [0, 1]
 #traffic_pattern = [0, 1, 2, 3, 4]
 #trace_file = ["Permutation_Traffic_Pattern_144.txt"]
 #trace_file = ["real_trace_16.txt"] 
 #trace_file = ["all_burst_32.txt"] 
 #trace_file = ["all_burst_32_0.8.txt"] 
-trace_file = ["real_trace.tr"]
+trace_file = ["real_trace_small.tr",
+              "real_trace_big.tr", ]
 #trace_file = ["real_trace_2.txt"]
 #trace_file = ["Data_Mining_Flow_Size_Overall_10000_load_0.400000_MP_RDMA.txt",
 #              "Data_Mining_Flow_Size_Overall_10000_load_0.500000_MP_RDMA.txt", 
@@ -84,7 +88,7 @@ trace_file = ["real_trace.tr"]
 
 def run_exp(id, alg):
     procs = [] 
-    print "Running %s" % (algnames[alg]) 
+#    print "Running %s" % (algnames[alg]) 
     
     for tp in traffic_pattern:
         load = tp * 0.1 + 0.4
@@ -95,8 +99,9 @@ def run_exp(id, alg):
                         for dT in deltaT:
                             for ms in messageSize:
                                 for rl in rate_selection:
-#log_file = open("{}-{}-{}.txt".format(tp, index, vc), 'w') 
-                                    proc = subprocess.Popen(['../../../build/scratch/mp_rdma_leaf_spine/mp_rdma_leaf_spine', 
+#log_file = open("{}-{}-{}.txt".format(tp, index, vc), 'w')
+                                    for df in diffbetweenpath:
+                                        proc = subprocess.Popen(['../../../build/scratch/mp_rdma_leaf_spine/mp_rdma_leaf_spine', 
                                                              '--cmd_serverPerLeaf=%d' % serverPerLeaf, 
                                                              '--cmd_leafSwitch=%d' % leafSwitch, 
                                                              '--cmd_spineSwitch=%d' % spineSwitch, 
@@ -107,7 +112,7 @@ def run_exp(id, alg):
                                                              '--cmd_leafToSpineECN2=%d' % leafToSpineECN2[index], 
                                                              '--cmd_serverToLeafDelay=%lf' % serverToLeafDelay, 
                                                              '--cmd_leafToSpineDelay=%lf' % leafToSpineDelay,
-                                                             '--cmd_diff=%d' % diffbetweenpath,
+                                                             '--cmd_diff=%d' % df,
                                                              '--cmd_rcvL=%d' % rL,
                                                              '--cmd_sndL=%d' % sL,
                                                              '--cmd_special_link_delay=%lf' % special_link_delay,
@@ -127,25 +132,26 @@ def run_exp(id, alg):
 #'--cmd_traceFile=%s' % trace_file[tp]], stdout=log_file)
                                                              '--cmd_traceFile=%s' % trace_file[tp]])
 #log_file.flush() 
-                                    procs.append(proc)
+                                        proc.wait()
+                                        #procs.append(proc)
     
-    for proc in procs: 
-        proc.wait() 
+#    for proc in procs: 
+#        proc.wait() 
 
 if __name__ == '__main__':
 
     start_time = datetime.datetime.now()
     threads = []
-
+    signal.signal(signal.SIGINT,myhandler)
     for id in range(0, len(Algs)):
         alg = Algs[id]
         threads.append(threading.Thread(target=run_exp, args=(id, alg)))
 
     for thread in threads:
         thread.start()
-        
-    for thread in threads:
-        thread.join()
+        thread.join()    
+#    for thread in threads:
+#        thread.join()
 
     end_time = datetime.datetime.now()
 

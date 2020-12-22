@@ -90,7 +90,7 @@
 #define PKT_QUOTA 100
 
 //lyj add
-#define SENDER_RETX    0
+#define SENDER_RETX    1
 
 namespace ns3 {
 
@@ -1729,7 +1729,7 @@ MpRDMASocketImpl::ReceivedAck (Ptr<Packet> packet, const MpRDMAHeader& mpRDMAHea
       //printf("update aack to %u\n",m_aackSeq);
   }
   //lyj debug
-  // printf("ack of %u snd.una=%u snd.nxt=%u\n",ackNumber.GetValue(),
+  // printf("at node %u, ack of %u snd.una=%u snd.nxt=%u\n",GetNode()->GetId(), ackNumber.GetValue(),
   //                 m_txBuffer->HeadSequence ().GetValue(),
   //                 m_nextTxSequence.Get().GetValue());
   NS_LOG_DEBUG ("ACK of " << ackNumber <<
@@ -1743,11 +1743,12 @@ MpRDMASocketImpl::ReceivedAck (Ptr<Packet> packet, const MpRDMAHeader& mpRDMAHea
   //if(aackTag.aackSeq < accept_point)
   if(ackNumber.GetValue() < accept_point)
   {
-      printf("at node %u, accept_point is %u don't accept an ACK:%u\n", GetNode()->GetId(),accept_point,ackNumber.GetValue());
+      //lyj
+      //printf("at node %u, accept_point is %u don't accept an ACK:%u\n", GetNode()->GetId(),accept_point,ackNumber.GetValue());
       return;
   }
 
-  //printf("at node %u, ACK aack %u, sack %u, head %u, reTx %u, next %u, recoveryPoint %u, isNack %u\n", 
+  // printf("at node %u, ACK aack %u, sack %u, head %u, reTx %u, next %u, recoveryPoint %u, isNack %u\n", 
   //        GetNode()->GetId(), aackTag.aackSeq, ackNumber.GetValue(),
   //        m_txBuffer->HeadSequence().GetValue(), m_highReTxMark.GetValue(), m_nextTxSequence.Get().GetValue(), m_recoveryPoint.GetValue(), aackTag.nack);
 
@@ -1825,8 +1826,9 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
   {
       if(ecnTag.ip_bit_1 && ecnTag.ip_bit_2) //ECN marked ACK 
       {
-          printf("at node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWnd.Get()); 
-          
+          if(PRINT_DEBUG_INFO){
+            printf("at node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWnd.Get()); 
+          }
           m_tcb->m_cWnd = SafeSubtraction(m_tcb->m_cWnd, m_tcb->m_segmentSize / 2); 
           if(m_tcb->m_cWnd < MINIMAL * m_tcb->m_segmentSize)
           {
@@ -2022,11 +2024,11 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
               //uint32_t t_pipe = (m_nextTxSequence.Get().GetValue() - m_txBuffer->HeadSequence().GetValue());
               //m_inflate = m_tcb->m_segmentSize + (int)t_pipe - (int)m_tcb->m_cWnd;
 
-          
-              printf("at node %u, return from loss recovery, available window %d, recoveryPoint %u, SND.NXT %u, SND.OOP %u, SND.UNA %u, inflate %d, cWnd %u\n", 
-                      GetNode()->GetId(), 
-                      m_inflate + m_tcb->m_cWnd.Get() - (m_nextTxSequence.Get().GetValue() - m_txBuffer->HeadSequence().GetValue()), 
-                      m_recoveryPoint.GetValue(), m_nextTxSequence.Get().GetValue(), m_ooP.GetValue(), new_head.GetValue(), m_inflate, m_tcb->m_cWnd.Get());
+              //lyj add          
+              // printf("at node %u, return from loss recovery, available window %d, recoveryPoint %u, SND.NXT %u, SND.OOP %u, SND.UNA %u, inflate %d, cWnd %u\n", 
+              //         GetNode()->GetId(), 
+              //         m_inflate + m_tcb->m_cWnd.Get() - (m_nextTxSequence.Get().GetValue() - m_txBuffer->HeadSequence().GetValue()), 
+              //         m_recoveryPoint.GetValue(), m_nextTxSequence.Get().GetValue(), m_ooP.GetValue(), new_head.GetValue(), m_inflate, m_tcb->m_cWnd.Get());
           }
       }
 
@@ -2123,7 +2125,8 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           m_recoveryPoint = m_nextTxSequence;
 
           m_inflate = 0;
-          printf("at node %u, on NACK, resend data from %u\n", GetNode()->GetId(),m_highReTxMark.GetValue());
+          //lyj add
+          //printf("at node %u, on NACK, resend data from %u\n", GetNode()->GetId(),m_highReTxMark.GetValue());
       }
 
       /* Yuanwei patch 6 */
@@ -2166,7 +2169,8 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
       }
       else
       {
-          printf("at node %u, on NACK, not send new data,now resendpoint is %u\n", GetNode()->GetId(),m_highReTxMark.GetValue());
+          //lyj add
+          //printf("at node %u, on NACK, not send new data,now resendpoint is %u\n", GetNode()->GetId(),m_highReTxMark.GetValue());
 
           
           /* yuanwei pending patch */

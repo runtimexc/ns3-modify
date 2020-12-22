@@ -24,6 +24,8 @@
 !/src/net-routing/ecmp-leaf-spine/ecmp-leaf-spine-routing-protocol.cc
 !/exp/leaf-spine/ooo/run.py
 !/exp/leaf-spine/ooo/real_trace.tr
+!/exp/leaf-spine/ooo/real_trace_small.tr
+!/exp/leaf-spine/ooo/real_trace_big.tr
 /src/topology/model/*
 !/src/topology/model/leaf-spine-topology-helper.cc
 !/src/topology/model/leaf-spine-topology-helper.h

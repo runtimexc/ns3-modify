@@ -17,7 +17,7 @@ using namespace ns3;
 
 //uint32_t maxBytes = 100000; //100MB
 uint32_t maxBytes = 0; //infinity 
-double stopTime = 5.0;//wsq modify 0.5 to 0.1
+double stopTime = .5;//wsq modify 0.5 to 0.1
 //double stopTime = 30; 
 uint32_t flowNum = 1;
 uint32_t finished_flow_num = 0;
@@ -154,13 +154,17 @@ void OnFlowFinished(Ptr<const PacketSink> sink)
 {
     finished_flow_num++;
 
-    printf("wsqfinished %u, sink start time %lf, bulk start time %lf, flow duration: %lf, average througput %lf Mbps,recv %d\n", 
+    // printf("wsqfinished %u, sink start time %lf, bulk start time %lf, flow duration: %lf, average througput %lf Mbps,recv %d\n", 
+    //         finished_flow_num,
+    //         sink->GetFlowStartTime(),
+    //         pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime(),
+    //         //Simulator::Now().GetSeconds() - sink->GetFlowStartTime(),
+    //         Simulator::Now().GetSeconds() - pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime(),
+    //         sink->GetTotalRx() * 0.001 * 0.008 / (Simulator::Now().GetSeconds() - pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime()),
+    //         sink->GetTotalRx());
+    printf("wsqfinished %u,flow duration: %lf, recv %d\n", 
             finished_flow_num,
-            sink->GetFlowStartTime(),
-            pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime(),
-            //Simulator::Now().GetSeconds() - sink->GetFlowStartTime(),
             Simulator::Now().GetSeconds() - pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime(),
-            sink->GetTotalRx() * 0.001 * 0.008 / (Simulator::Now().GetSeconds() - pBulkSends[sink->GetBulkSendIndex()]->GetFlowStartTime()),
             sink->GetTotalRx());
 
     LogManager::WriteLog(1, "%lf, %lf, %u\n",
@@ -326,7 +330,7 @@ int main(int argc, char *argv[])
 
     Config::SetDefault("ns3::RttEstimator::InitialEstimation", TimeValue(Seconds(0.0001))); 
 
-    printf("set rcvL to value %u, sndL to value %u\n", rcvL, sndL);
+    printf("L is %u, delta is %u, diff is %u trace is %s\n", rcvL, sndL, diff,trace_file.c_str());
     
     /* =========================================================================*/
 
@@ -397,7 +401,7 @@ int main(int argc, char *argv[])
     //tcp_stack.Install(tcpNodes);
 
     uint32_t totalNodes = serverPerLeaf * leafSwitch;
-    printf("there is in total %u servers\n", totalNodes); 
+    //printf("there is in total %u servers\n", totalNodes); 
     
     FILE* fp; 
     fp = fopen(trace_file.c_str(), "r"); 
@@ -416,7 +420,7 @@ int main(int argc, char *argv[])
         if(fscanf(fp, "%u %u %lf %lf\n", &src, &dest, &startTime, &size)) ;
         if(size != 0)
             size = ((int)size / 1436 + 1) * 1436;
-        printf("flow %u, src %u, dest %u, start %lf, size %lf\n", flowCount, src, dest, startTime, size); 
+        //printf("flow %u, src %u, dest %u, start %lf, size %lf\n", flowCount, src, dest, startTime, size); 
 
         std::string protocol = "ns3::MpRDMASocketFactory";
 
@@ -539,7 +543,7 @@ PointToPointHelper trHelper;
         double temp = psinks[i]->GetTotalRx() * 0.001 * 0.008 / (stopTime - filterTime); 
         LogManager::WriteLog(2, "%u, %lf\n", i, temp);
 
-        printf("%u, %lf\n", i, temp); 
+        //printf("%u, %lf\n", i, temp); 
     }
 
     return 0; 

@@ -98,7 +98,7 @@ namespace ns3
             terminalDevices.Add(link.Get(0));
             switchDevices.Add(link.Get(1));
 //wsq
-std::cout<<"p2p: " << terminalNodes.Get(from)->GetId()<<" --- "<< leafSwitchNodes.Get(to)->GetId() <<" ChannelId: "<<link.Get(0)->GetChannel()->GetId()<<" "<<link.Get(1)->GetChannel()->GetId()<<std::endl;
+//std::cout<<"p2p: " << terminalNodes.Get(from)->GetId()<<" --- "<< leafSwitchNodes.Get(to)->GetId() <<" ChannelId: "<<link.Get(0)->GetChannel()->GetId()<<" "<<link.Get(1)->GetChannel()->GetId()<<std::endl;
         }
 
         // create topology, link leaf to spine 
@@ -125,7 +125,7 @@ std::cout<<"p2p: " << terminalNodes.Get(from)->GetId()<<" --- "<< leafSwitchNode
                 switchDevices.Add(link.Get(0));
                 switchDevices.Add(link.Get(1));
 //wsq
-std::cout<<"p2p: " << leafSwitchNodes.Get(from)->GetId()<<" --- "<< spineSwitchNodes.Get(to)->GetId() <<" ChannelId: "<<link.Get(0)->GetChannel()->GetId()<<" "<<link.Get(1)->GetChannel()->GetId()<<std::endl;
+//std::cout<<"p2p: " << leafSwitchNodes.Get(from)->GetId()<<" --- "<< spineSwitchNodes.Get(to)->GetId() <<" ChannelId: "<<link.Get(0)->GetChannel()->GetId()<<" "<<link.Get(1)->GetChannel()->GetId()<<std::endl;
             }
         }
     }
