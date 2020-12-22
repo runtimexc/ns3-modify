@@ -11,7 +11,7 @@ import curses
 import signal
 
 def myhandler(signal,frame):
-    os._exit(0)
+    sys.exit()
 
 algnames = ["none", "LeafSpine"]
 Algs = [1]
@@ -29,8 +29,8 @@ leafToSpineECN2 = [54]
 
 serverToLeafDelay = 2.0
 leafToSpineDelay = 2.0
-diffbetweenpath = [2, 3, 4, 5, 6, 10, 15]
-
+#diffbetweenpath = [2, 3, 4, 5, 6, 10, 15]
+diffbetweenpath = [3]
 #wsq
 #leafToSpineDelay1=2.0
 #leafToSpineDelay2=2.0
@@ -47,8 +47,8 @@ special_rate4 = ["10Gbps", "80Gbps"]
 #sndL = [16, 32, 48, 64, 80, 96, 112, 128, 256, 512, 1024]
 #sndL = [32]
 sndL = [32]
-rcvL = [32, 40, 48, 52, 56, 58, 60, 62, 64, 66, 68]
-
+#rcvL = [32, 40, 48, 52, 56, 58, 60, 62, 64, 66, 68]
+rcvL = [32]
 #sndL = [32]
 #rcvL = [64]
 
@@ -64,7 +64,8 @@ deltaT = [0]
 
 load = 0.4
 
-traffic_pattern = [0, 1]
+#traffic_pattern = [0, 1]
+traffic_pattern = [0]
 #traffic_pattern = [0, 1, 2, 3, 4]
 #trace_file = ["Permutation_Traffic_Pattern_144.txt"]
 #trace_file = ["real_trace_16.txt"] 

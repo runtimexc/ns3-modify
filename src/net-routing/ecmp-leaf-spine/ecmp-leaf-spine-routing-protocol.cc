@@ -267,6 +267,12 @@ namespace ns3
          {
                 MpRDMAHeader l4H; 
                 packet->PeekHeader(l4H);
+                //lyj fixed
+                ReTxTag retxTag;
+                packet->PeekPacketTag(retxTag);
+                if(retxTag.isReTx){
+                    return ;
+                }
 
                 double randNum = rand() % 1000000 / 1000000.0; //wsq annotation
                 //Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();//wsq modify for random

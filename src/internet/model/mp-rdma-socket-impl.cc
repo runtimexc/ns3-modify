@@ -72,7 +72,7 @@
 #define CA_STATE 1 
 
 #define MINIMAL 1
-
+#define lyj_print 1
 #define ENABLE_AACK 0
 
 #define L_RATIO     0.5
@@ -1729,9 +1729,10 @@ MpRDMASocketImpl::ReceivedAck (Ptr<Packet> packet, const MpRDMAHeader& mpRDMAHea
       //printf("update aack to %u\n",m_aackSeq);
   }
   //lyj debug
-  // printf("at node %u, ack of %u snd.una=%u snd.nxt=%u\n",GetNode()->GetId(), ackNumber.GetValue(),
-  //                 m_txBuffer->HeadSequence ().GetValue(),
-  //                 m_nextTxSequence.Get().GetValue());
+// printf("at node %u, ack of %u snd.una=%u snd.nxt=%u\n",GetNode()->GetId(), ackNumber.GetValue(),
+//                   m_txBuffer->HeadSequence ().GetValue(),
+//                   m_nextTxSequence.Get().GetValue());
+  
   NS_LOG_DEBUG ("ACK of " << ackNumber <<
                 " SND.UNA=" << m_txBuffer->HeadSequence () <<
                 " SND.NXT=" << m_nextTxSequence);
@@ -1743,15 +1744,14 @@ MpRDMASocketImpl::ReceivedAck (Ptr<Packet> packet, const MpRDMAHeader& mpRDMAHea
   //if(aackTag.aackSeq < accept_point)
   if(ackNumber.GetValue() < accept_point)
   {
-      //lyj
       //printf("at node %u, accept_point is %u don't accept an ACK:%u\n", GetNode()->GetId(),accept_point,ackNumber.GetValue());
       return;
   }
-
-  // printf("at node %u, ACK aack %u, sack %u, head %u, reTx %u, next %u, recoveryPoint %u, isNack %u\n", 
-  //        GetNode()->GetId(), aackTag.aackSeq, ackNumber.GetValue(),
-  //        m_txBuffer->HeadSequence().GetValue(), m_highReTxMark.GetValue(), m_nextTxSequence.Get().GetValue(), m_recoveryPoint.GetValue(), aackTag.nack);
-
+if(lyj_print){
+  printf("at node %u, ACK aack %u, sack %u, head %u, reTx %u, next %u, recoveryPoint %u, isNack %u\n", 
+         GetNode()->GetId(), aackTag.aackSeq, ackNumber.GetValue(),
+         m_txBuffer->HeadSequence().GetValue(), m_highReTxMark.GetValue(), m_nextTxSequence.Get().GetValue(), m_recoveryPoint.GetValue(), aackTag.nack);
+}
 
 
 
@@ -2968,10 +2968,13 @@ MpRDMASocketImpl::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool w
       isRetransmission = true;
     }
   //lyj debug
-  // printf("at node %u, maxSize %u, seq %u, head %u, tail %u, nextTx %u, reTxMark %u, recoveryPoint %u\n", 
-  //        GetNode()->GetId(), maxSize, seq.GetValue(), m_txBuffer->HeadSequence().GetValue(), m_txBuffer->TailSequence().GetValue(), 
-  //        m_nextTxSequence.Get().GetValue(), m_highReTxMark.GetValue(), m_recoveryPoint.GetValue());
+  if(lyj_print){
+printf("at node %u, maxSize %u, seq %u, head %u, tail %u, nextTx %u, reTxMark %u, recoveryPoint %u\n", 
+         GetNode()->GetId(), maxSize, seq.GetValue(), m_txBuffer->HeadSequence().GetValue(), m_txBuffer->TailSequence().GetValue(), 
+         m_nextTxSequence.Get().GetValue(), m_highReTxMark.GetValue(), m_recoveryPoint.GetValue());
 
+  }
+  
   Ptr<Packet> p = m_txBuffer->CopyFromSequence (maxSize, seq);
   uint32_t sz = p->GetSize (); // Size of packet
 
@@ -4734,7 +4737,7 @@ void MpRDMASocketImpl::MpRDMAreTx(uint32_t pathId)
           // if(m_seqAckedMap[toTxSeq].packetSize == 0){
           //           printf("%s %d\n",__FUNCTION__,__LINE__);
           //         }
-    SendDataPacket(toTxSeq, m_seqAckedMap[toTxSeq].packetSize, true, pathId);
+    SendDataPacket(toTxSeq, m_tcb->m_segmentSize, true, pathId);
 
     m_senderState = CA;
 }
