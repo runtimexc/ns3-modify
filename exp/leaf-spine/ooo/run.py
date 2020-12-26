@@ -46,8 +46,10 @@ special_rate4 = ["10Gbps", "80Gbps"]
 
 #sndL = [16, 32, 48, 64, 80, 96, 112, 128, 256, 512, 1024]
 #sndL = [32]
-sndL = [32]
-rcvL = [32, 40, 48, 52, 56, 58, 60, 62, 64, 66, 68]
+sndL = [16]
+#rcvL = [32, 40, 48, 52, 56, 58, 60, 62, 64, 66, 68]
+rcvL = [128]
+threshold = 0 
 #rcvL = [32]
 #sndL = [32]
 #rcvL = [64]
@@ -117,6 +119,7 @@ def run_exp(id, alg):
                                                              '--cmd_rcvL=%d' % rL,
                                                              '--cmd_sndL=%d' % sL,
                                                              '--cmd_special_link_delay=%lf' % special_link_delay,
+                                                             '--cmd_resend_threshold=%d' % threshold,
 #wsq
                                                              #'--cmd_leafToSpineDelay1=%lf' % leafToSpineDelay1,
                                                              #'--cmd_leafToSpineDelay2=%lf' % leafToSpineDelay2,

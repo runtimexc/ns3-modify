@@ -234,6 +234,7 @@ int main(int argc, char *argv[])
     double serverToLeafDelay = 2.0; //us
     double leafToSpineDelay = 2.0; //us 
     uint32_t diff = 1;
+    uint32_t sendthreshold = 16;
 
     bool varyCapacity = false;
 
@@ -284,6 +285,8 @@ int main(int argc, char *argv[])
     cmd.AddValue("cmd_special_rate3", "special link rate 3", special_rate3);
     cmd.AddValue("cmd_special_rate4", "special link rate 4", special_rate4);
 
+    cmd.AddValue("cmd_resend_threshold", "special link rate 4", sendthreshold);
+
     cmd.Parse (argc, argv);
 
     char filename1[1024];
@@ -320,7 +323,8 @@ int main(int argc, char *argv[])
     Config::SetDefault("ns3::MpRDMASocket::RcvBufSize", UintegerValue(5000000));  
     Config::SetDefault("ns3::MpRDMASocket::InitialCwnd", UintegerValue(8));
     Config::SetDefault("ns3::MpRDMASocketImpl::MaxPathNum", UintegerValue(spineSwitch - 1));  
-    Config::SetDefault("ns3::MpRDMASocketImpl::FastRecoveryAlpha", DoubleValue(2.0));  
+    Config::SetDefault("ns3::MpRDMASocketImpl::FastRecoveryAlpha", DoubleValue(2.0));
+    Config::SetDefault("ns3::MpRDMASocketImpl::ReTxSendThreshold", UintegerValue(sendthreshold));  
 
     Config::SetDefault("ns3::MpRDMASocket::ReceiverOOL", UintegerValue(rcvL));
     Config::SetDefault("ns3::MpRDMASocket::SenderOOL", UintegerValue(sndL));

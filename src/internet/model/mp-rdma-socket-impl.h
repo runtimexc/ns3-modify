@@ -1074,8 +1074,8 @@ protected:
 
 
   /* out-of-order control */
-  //uint32_t m_sndL;
-  //uint32_t m_rcvL;
+  // uint32_t m_sndL;
+  // uint32_t m_rcvL;
 
   SequenceNumber32 m_ooP;
   SequenceNumber32 m_ooL;
@@ -1115,6 +1115,14 @@ protected:
   std::map<uint32_t,int> m_path_cwnd_log;
   void logCwnd();
   int mLogCwnd;
+
+  //lyj add
+  bool m_sendretx;
+  SequenceNumber32 m_detect;
+  SequenceNumber32 m_High_resend_pos;
+  uint32_t retx_thresold;
+  SequenceNumber32 m_oversendretx;
+  SequenceNumber32 m_startsendretx;
 };
 
 /**
