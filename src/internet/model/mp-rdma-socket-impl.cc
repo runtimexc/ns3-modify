@@ -72,7 +72,7 @@
 #define CA_STATE 1 
 
 #define MINIMAL 1
-#define lyj_print 0
+
 #define ENABLE_AACK 0
 
 #define L_RATIO     0.5
@@ -105,7 +105,7 @@ MpRDMASocketImpl::GetTypeId (void)
     .SetParent<MpRDMASocket> ()
     .SetGroupName ("Internet")
     .AddConstructor<MpRDMASocketImpl> ()
-//    .AddAttribute ("MpRDMA    mState", "State in MP-RDMA state machine",
+//    .AddAttribute ("MpRDMAState", "State in MP-RDMA state machine",
 //                   TypeId::ATTR_GET,
 //                   EnumValue (CLOSED),
 //                   MakeEnumAccessor (&MpRDMASocketImpl::m_state),
@@ -178,11 +178,11 @@ MpRDMASocketImpl::GetTypeId (void)
                    DoubleValue (1.5),  
                    MakeDoubleAccessor (&MpRDMASocketImpl::m_fastAlpha), 
                    MakeDoubleChecker<double> (0)) 
-    // .AddAttribute ("SenderOOL", "L for sender ooo control",
+    //.AddAttribute ("SenderOOL", "L for sender ooo control",
     //               UintegerValue (SND_L_VALUE),
     //               MakeUintegerAccessor (&MpRDMASocketImpl::m_sndL),
     //               MakeUintegerChecker<uint32_t> ()) 
-    // .AddAttribute ("ReceiverOOL", "L for receiver ooo control",
+    //.AddAttribute ("ReceiverOOL", "L for receiver ooo control",
     //               UintegerValue (RCV_L_VALUE),
     //               MakeUintegerAccessor (&MpRDMASocketImpl::m_rcvL),
     //               MakeUintegerChecker<uint32_t> ()) 
@@ -387,8 +387,8 @@ MpRDMASocketImpl::MpRDMASocketImpl (void)
     m_rWndTimeStamp(0), 
     m_reTxSuspCount(0), 
     m_reTxOppCount(0),
-    // m_sndL(SND_L_VALUE),
-    // m_rcvL(RCV_L_VALUE),
+    //m_sndL(SND_L_VALUE),
+    //m_rcvL(RCV_L_VALUE),
     m_ooP(0),
     m_ooL(0),
     m_sndMax(0),
@@ -399,7 +399,6 @@ MpRDMASocketImpl::MpRDMASocketImpl (void)
     m_notInflateCount(0),
     m_move_ooL(0),
     m_bReTx(0),
-    m_bRecorySend(0),
     m_bSendPkt(0),
     m_logOOO(1),
     m_wait(0),
@@ -531,8 +530,8 @@ MpRDMASocketImpl::MpRDMASocketImpl (const MpRDMASocketImpl& sock)
     m_rWndTimeStamp(0),  
     m_reTxSuspCount(0), 
     m_reTxOppCount(0),
-    // m_sndL(SND_L_VALUE),
-    // m_rcvL(RCV_L_VALUE),
+    //m_sndL(SND_L_VALUE),
+    //m_rcvL(RCV_L_VALUE),
     m_ooP(0),
     m_ooL(0),
     m_sndMax(0),
@@ -543,7 +542,6 @@ MpRDMASocketImpl::MpRDMASocketImpl (const MpRDMASocketImpl& sock)
     m_notInflateCount(0),
     m_move_ooL(0),
     m_bReTx(0),
-    m_bRecorySend(0),
     m_bSendPkt(0),
     m_logOOO(1),
     m_wait(0),
@@ -1739,10 +1737,9 @@ MpRDMASocketImpl::ReceivedAck (Ptr<Packet> packet, const MpRDMAHeader& mpRDMAHea
       //printf("update aack to %u\n",m_aackSeq);
   }
   //lyj debug
-// printf("at node %u, ack of %u snd.una=%u snd.nxt=%u\n",GetNode()->GetId(), ackNumber.GetValue(),
-//                   m_txBuffer->HeadSequence ().GetValue(),
-//                   m_nextTxSequence.Get().GetValue());
-  
+  // printf("ack of %u snd.una=%u snd.nxt=%u\n",ackNumber.GetValue(),
+  //                 m_txBuffer->HeadSequence ().GetValue(),
+  //                 m_nextTxSequence.Get().GetValue());
   NS_LOG_DEBUG ("ACK of " << ackNumber <<
                 " SND.UNA=" << m_txBuffer->HeadSequence () <<
                 " SND.NXT=" << m_nextTxSequence);
@@ -1754,14 +1751,14 @@ MpRDMASocketImpl::ReceivedAck (Ptr<Packet> packet, const MpRDMAHeader& mpRDMAHea
   //if(aackTag.aackSeq < accept_point)
   if(ackNumber.GetValue() < accept_point)
   {
-      //printf("at node %u, accept_point is %u don't accept an ACK:%u\n", GetNode()->GetId(),accept_point,ackNumber.GetValue());
+      printf("at node %u, accept_point is %u don't accept an ACK:%u\n", GetNode()->GetId(),accept_point,ackNumber.GetValue());
       return;
   }
-if(lyj_print){
-  printf("at node %u, ACK aack %u, sack %u, head %u, reTx %u, next %u, recoveryPoint %u, isNack %u\n", 
-         GetNode()->GetId(), aackTag.aackSeq, ackNumber.GetValue(),
-         m_txBuffer->HeadSequence().GetValue(), m_highReTxMark.GetValue(), m_nextTxSequence.Get().GetValue(), m_recoveryPoint.GetValue(), aackTag.nack);
-}
+
+  //printf("at node %u, ACK aack %u, sack %u, head %u, reTx %u, next %u, recoveryPoint %u, isNack %u\n", 
+  //        GetNode()->GetId(), aackTag.aackSeq, ackNumber.GetValue(),
+  //        m_txBuffer->HeadSequence().GetValue(), m_highReTxMark.GetValue(), m_nextTxSequence.Get().GetValue(), m_recoveryPoint.GetValue(), aackTag.nack);
+
 
 
 
@@ -1836,9 +1833,8 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
   {
       if(ecnTag.ip_bit_1 && ecnTag.ip_bit_2) //ECN marked ACK 
       {
-          if(PRINT_DEBUG_INFO){
-            printf("at node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWnd.Get()); 
-          }
+          printf("at node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWnd.Get()); 
+          
           m_tcb->m_cWnd = SafeSubtraction(m_tcb->m_cWnd, m_tcb->m_segmentSize / 2); 
           if(m_tcb->m_cWnd < MINIMAL * m_tcb->m_segmentSize)
           {
@@ -1914,7 +1910,7 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
   {
       m_bSendPkt = false;
 
-      /* update OOP, OOL */ 
+      /* update OOP, OOL */
       if(ackNumber > m_ooP)
       {
           m_ooP = ackNumber;
@@ -1956,11 +1952,8 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
               }
 #endif
           }
-#if (SENDER_RETX == 1)
-          if(!m_bReTx/* || m_bRecorySend*/)
-#else
+
           if(!m_bReTx)
-#endif
           {
               m_inflate -= (aackTag.aackSeq - m_txBuffer->HeadSequence().GetValue());
 
@@ -1976,14 +1969,8 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           /* move SND.UNA */
           SequenceNumber32 new_head = SequenceNumber32(aackTag.aackSeq);
           //lyj add
-          m_detect = SequenceNumber32(new_head + retx_thresold* m_tcb->m_segmentSize);
-          //lyj add
           if(new_head > m_nextTxSequence){
-            //lyj origin
-            // m_nextTxSequence = (m_nextTxSequence-m_txBuffer->HeadSequence ())+new_head;
-            // m_ooP = m_nextTxSequence - m_tcb->m_segmentSize;
-            // m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
-            m_nextTxSequence = new_head;
+            m_nextTxSequence = (m_nextTxSequence-m_txBuffer->HeadSequence ())+new_head;
             m_ooP = m_nextTxSequence - m_tcb->m_segmentSize;
             m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
           }
@@ -2045,23 +2032,21 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           if (m_bReTx && m_txBuffer->HeadSequence() >= m_recoveryPoint)
           {
               m_bReTx = false;
-// #if(SENDER_RETX == 1)
-//               m_bRecorySend=false;
-// #endif
+              //m_bSendPkt = true;
+              
               /* yuanwei patch 1 */
               //uint32_t t_pipe = (m_nextTxSequence.Get().GetValue() - m_txBuffer->HeadSequence().GetValue());
               //m_inflate = m_tcb->m_segmentSize + (int)t_pipe - (int)m_tcb->m_cWnd;
 
-              //lyj add          
-              // printf("at node %u, return from loss recovery, available window %d, recoveryPoint %u, SND.NXT %u, SND.OOP %u, SND.UNA %u, inflate %d, cWnd %u\n", 
-              //         GetNode()->GetId(), 
-              //         m_inflate + m_tcb->m_cWnd.Get() - (m_nextTxSequence.Get().GetValue() - m_txBuffer->HeadSequence().GetValue()), 
-              //         m_recoveryPoint.GetValue(), m_nextTxSequence.Get().GetValue(), m_ooP.GetValue(), new_head.GetValue(), m_inflate, m_tcb->m_cWnd.Get());
+          
+              printf("at node %u, return from loss recovery, available window %d, recoveryPoint %u, SND.NXT %u, SND.OOP %u, SND.UNA %u, inflate %d, cWnd %u\n", 
+                      GetNode()->GetId(), 
+                      m_inflate + m_tcb->m_cWnd.Get() - (m_nextTxSequence.Get().GetValue() - m_txBuffer->HeadSequence().GetValue()), 
+                      m_recoveryPoint.GetValue(), m_nextTxSequence.Get().GetValue(), m_ooP.GetValue(), new_head.GetValue(), m_inflate, m_tcb->m_cWnd.Get());
           }
       }
 
       /* yuanwei patch 2 */
-      //lyj add
       if(ackNumber >= m_ooL || retxTag.isReTx)
       //if(ackNumber >= m_ooL)
       {
@@ -2082,58 +2067,26 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
               if(m_highReTxMark < m_recoveryPoint)
               {
                   MpRDMAreTx(pathTag.pid);
-//recode 
-/*#if(SENDER_RETX == 1)
-                  if(m_bRecorySend){
-                    MpRDMASend();
-                  }
-#endif*/
               }
               else
               {
-// //recode
-// #if(SENDER_RETX == 1)
-//                   if(m_bRecorySend){
-//                     MpRDMASend();
-//                   }
-//                   else{
-//                       /* lyj patch */
-//                       SequenceNumber32 toTxSeq; 
-//                       toTxSeq = m_nextTxSequence.Get(); 
-//                       // identify nextsend no more than rec+L,should send first pkt to move
-//                       uint32_t s = m_tcb->m_segmentSize; 
-//                       if(toTxSeq == ackNumber){
-//                         toTxSeq = m_txBuffer->HeadSequence();
-//                         uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
-//                       }else{
-//                         uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
-//                         m_nextTxSequence += sz;
-//                       }
-//                   }
-// #else
                   //MpRDMASend();
 
                   
                   
                   /* yuanwei patch 2 */
-                  // SequenceNumber32 toTxSeq; 
-                  // toTxSeq = m_nextTxSequence.Get(); 
-                  // uint32_t s = m_tcb->m_segmentSize;  
-                  // uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
-                  // m_nextTxSequence += sz;
-                  /* lyj patch */
-                      SequenceNumber32 toTxSeq; 
-                      toTxSeq = m_nextTxSequence.Get(); 
-                      // identify nextsend no more than rec+L,should send first pkt to move
-                      uint32_t s = m_tcb->m_segmentSize; 
-                      if(toTxSeq == ackNumber){
-                        toTxSeq = m_txBuffer->HeadSequence();
-                        uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
-                      }else{
-                        uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
-                        m_nextTxSequence += sz;
-                      }
-// #endif
+                  SequenceNumber32 toTxSeq; 
+                  toTxSeq = m_nextTxSequence.Get(); 
+
+                  uint32_t s = m_tcb->m_segmentSize;  
+                  //lyj debug
+                  // if(s == 0){
+                  //   printf("%s %d\n",__FUNCTION__,__LINE__);
+                  // }
+                  uint32_t sz = SendDataPacket(toTxSeq, s, false, pathTag.pid);
+
+                  m_nextTxSequence += sz;
+
 
 
               }
@@ -2153,24 +2106,17 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           }else{
             MpRDMASend();
           }
-#endif
+#else
           //printf("at node %u, ReceivedAck() call MpRDMASend()\n", GetNode()->GetId());
           MpRDMASend();
+#endif
       }
   }
   else /* On NACK */
   {
-// #if(SENDER_RETX == 1)
-//       if(m_bRecorySend || !m_bReTx)
-//       {
-//           m_bRecorySend = false;
-//           m_bReTx = true;
-// #else
       if(!m_bReTx)
       {
-          m_sendretx = false;
           m_bReTx = true;
-// #endif
 
           if(m_highReTxMark < m_txBuffer->HeadSequence())
               m_highReTxMark = m_txBuffer->HeadSequence();
@@ -2181,8 +2127,7 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           m_recoveryPoint = m_nextTxSequence;
 
           m_inflate = 0;
-          //lyj add
-          //printf("at node %u, on NACK, resend data from %u\n", GetNode()->GetId(),m_highReTxMark.GetValue());
+          printf("at node %u, on NACK, resend data from %u\n", GetNode()->GetId(),m_highReTxMark.GetValue());
       }
 
       /* Yuanwei patch 6 */
@@ -2225,8 +2170,7 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
       }
       else
       {
-          //lyj add
-          //printf("at node %u, on NACK, not send new data,now resendpoint is %u\n", GetNode()->GetId(),m_highReTxMark.GetValue());
+          printf("at node %u, on NACK, not send new data,now resendpoint is %u\n", GetNode()->GetId(),m_highReTxMark.GetValue());
 
           
           /* yuanwei pending patch */
@@ -2681,6 +2625,8 @@ MpRDMASocketImpl::DoPeerClose (void)
   else
     { // Need to ack, the application will close later
       SendEmptyPacket (MpRDMAHeader::ACK);
+//wsq add for test
+//printf("wsqtime:%lf \n",Simulator::Now().GetSeconds() );
     }
   if (m_state == LAST_ACK)
     {
@@ -3024,13 +2970,10 @@ MpRDMASocketImpl::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool w
       isRetransmission = true;
     }
   //lyj debug
-  if(lyj_print){
-printf("at node %u, maxSize %u, seq %u, head %u, tail %u, nextTx %u, reTxMark %u, recoveryPoint %u\n", 
-         GetNode()->GetId(), maxSize, seq.GetValue(), m_txBuffer->HeadSequence().GetValue(), m_txBuffer->TailSequence().GetValue(), 
-         m_nextTxSequence.Get().GetValue(), m_highReTxMark.GetValue(), m_recoveryPoint.GetValue());
+  // printf("at node %u, maxSize %u, seq %u, head %u, tail %u, nextTx %u, reTxMark %u, recoveryPoint %u\n", 
+  //        GetNode()->GetId(), maxSize, seq.GetValue(), m_txBuffer->HeadSequence().GetValue(), m_txBuffer->TailSequence().GetValue(), 
+  //        m_nextTxSequence.Get().GetValue(), m_highReTxMark.GetValue(), m_recoveryPoint.GetValue());
 
-  }
-  
   Ptr<Packet> p = m_txBuffer->CopyFromSequence (maxSize, seq);
   uint32_t sz = p->GetSize (); // Size of packet
 
@@ -4478,10 +4421,9 @@ MpRDMASocketImpl::MacroTimeout ()
    //LYJ debug
   //printf("in MARCOTIME :update snd.nxt to %u\n",m_nextTxSequence.Get().GetValue());
   m_pipe = 0;
-  //origin code
-  //m_highReTxMark = SequenceNumber32(0); 
-  //lyj debug: begin from nack
-  m_highReTxMark = m_nextTxSequence;
+
+  m_highReTxMark = SequenceNumber32(0); 
+
   //if (m_sendPendingDataEvent.IsRunning ())
   //{
   //    m_sendPendingDataEvent.Cancel(); 
@@ -4494,8 +4436,6 @@ MpRDMASocketImpl::MacroTimeout ()
   //}
 //wsq
   //printf("at node %u, TimeOut() call MpRDMASend()\n", GetNode()->GetId());
-  //lyj add 
-  m_sendretx = false;
   MpRDMASend(); 
 
 }
@@ -4796,7 +4736,7 @@ void MpRDMASocketImpl::MpRDMAreTx(uint32_t pathId)
           // if(m_seqAckedMap[toTxSeq].packetSize == 0){
           //           printf("%s %d\n",__FUNCTION__,__LINE__);
           //         }
-    SendDataPacket(toTxSeq, m_tcb->m_segmentSize, true, pathId);
+    SendDataPacket(toTxSeq, m_seqAckedMap[toTxSeq].packetSize, true, pathId);
 
     m_senderState = CA;
 }
