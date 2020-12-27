@@ -1977,6 +1977,7 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           m_txBuffer->DiscardUpTo(new_head);
 //recode sender_retx
 #if(SENDER_RETX == 1)
+          m_detect = new_head + retx_thresold * m_tcb->m_segmentSize;
           //if find order ,resend from head
           if(new_head > m_startsendretx){
             m_sendretx = false;
