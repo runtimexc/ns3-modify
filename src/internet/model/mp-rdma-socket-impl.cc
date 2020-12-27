@@ -1977,16 +1977,16 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           m_txBuffer->DiscardUpTo(new_head);
 //recode sender_retx
 #if(SENDER_RETX == 1)
-          m_detect = new_head + retx_thresold * m_tcb->m_segmentSize;
+          m_detect = m_txBuffer->HeadSequence () + retx_thresold * m_tcb->m_segmentSize;
           //if find order ,resend from head
-          if(new_head > m_startsendretx){
+          if(m_txBuffer->HeadSequence () > m_startsendretx){
             m_sendretx = false;
           }
           if(!m_bReTx && (ackNumber > m_detect) && !m_sendretx){
             m_sendretx = true;
-            m_High_resend_pos = new_head;
+            m_High_resend_pos = m_txBuffer->HeadSequence ();
             m_oversendretx = ackNumber;
-            m_startsendretx = new_head;
+            m_startsendretx = m_txBuffer->HeadSequence ();
           }
               // if(ackNumber < m_ooL){
               //   if(!m_bReTx)
@@ -2118,7 +2118,9 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
       if(!m_bReTx)
       {
           m_bReTx = true;
-
+#if(SENDER_RETX == 1)
+          m_sendretx = false;
+#endif
           if(m_highReTxMark < m_txBuffer->HeadSequence())
               m_highReTxMark = m_txBuffer->HeadSequence();
 
