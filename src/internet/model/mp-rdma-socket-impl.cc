@@ -2100,7 +2100,7 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
             toTxSeq = m_High_resend_pos;
             m_High_resend_pos += m_tcb->m_segmentSize;
             m_inflate -= m_tcb->m_segmentSize;
-            SendDataPacket(toTxSeq, m_tcb->m_segmentSize, true, pathTag.pid);
+            SendDataPacket(toTxSeq, m_tcb->m_segmentSize, false, pathTag.pid);
             if(m_High_resend_pos >= m_oversendretx){
               m_sendretx = false;
             }
@@ -2143,7 +2143,8 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           //   printf("%d seq is %u\n",m_seqAckedMap.size(),m_txBuffer->HeadSequence().GetValue());
           // }
           uint32_t s = m_tcb->m_segmentSize;
-          SendDataPacket(m_txBuffer->HeadSequence(), s, true, pathTag.pid);
+          //1228 change to false
+          SendDataPacket(m_txBuffer->HeadSequence(), s, false, pathTag.pid);
       }
 
 
@@ -4739,7 +4740,8 @@ void MpRDMASocketImpl::MpRDMAreTx(uint32_t pathId)
           // if(m_seqAckedMap[toTxSeq].packetSize == 0){
           //           printf("%s %d\n",__FUNCTION__,__LINE__);
           //         }
-    SendDataPacket(toTxSeq, m_seqAckedMap[toTxSeq].packetSize, true, pathId);
+    //change to false
+    SendDataPacket(toTxSeq, m_seqAckedMap[toTxSeq].packetSize, false, pathId);
 
     m_senderState = CA;
 }
