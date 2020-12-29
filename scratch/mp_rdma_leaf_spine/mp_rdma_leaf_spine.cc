@@ -334,7 +334,7 @@ int main(int argc, char *argv[])
 
     Config::SetDefault("ns3::RttEstimator::InitialEstimation", TimeValue(Seconds(0.0001))); 
 
-    printf("L is %u, delta is %u, diff is %u trace is %s\n", rcvL, sndL, diff,trace_file.c_str());
+    printf("L: %u, delta : %u, diff : %u, Threshold : %u, trace : %s\n", rcvL, sndL, diff, sendthreshold, trace_file.c_str());
     
     /* =========================================================================*/
 

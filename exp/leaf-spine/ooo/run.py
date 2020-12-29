@@ -29,7 +29,7 @@ leafToSpineECN2 = [54]
 
 serverToLeafDelay = 2.0
 leafToSpineDelay = 2.0
-diffbetweenpath = [2, 3, 4, 5, 6, 10, 15]
+diffbetweenpath = [2]
 #diffbetweenpath = [15]
 #wsq
 #leafToSpineDelay1=2.0
@@ -48,8 +48,8 @@ special_rate4 = ["10Gbps", "80Gbps"]
 #sndL = [32]
 sndL = [16]
 #rcvL = [32, 40, 48, 52, 56, 58, 60, 62, 64, 66, 68]
-rcvL = [128]
-threshold = 1 
+rcvL = [64]
+threshold = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 64] 
 #rcvL = [32]
 #sndL = [32]
 #rcvL = [64]
@@ -104,40 +104,41 @@ def run_exp(id, alg):
                                 for rl in rate_selection:
 #log_file = open("{}-{}-{}.txt".format(tp, index, vc), 'w')
                                     for df in diffbetweenpath:
-                                        proc = subprocess.Popen(['../../../build/scratch/mp_rdma_leaf_spine/mp_rdma_leaf_spine', 
-                                                             '--cmd_serverPerLeaf=%d' % serverPerLeaf, 
-                                                             '--cmd_leafSwitch=%d' % leafSwitch, 
-                                                             '--cmd_spineSwitch=%d' % spineSwitch, 
-                                                             '--cmd_serverToLeafRate=%s' % serverToLeafRate, 
-                                                             '--cmd_leafToSpineRate1=%s' % leafToSpineRate1, 
-                                                             '--cmd_leafToSpineRate2=%s' % leafToSpineRate2, 
-                                                             '--cmd_leafToSpineECN1=%d' % leafToSpineECN1[index], 
-                                                             '--cmd_leafToSpineECN2=%d' % leafToSpineECN2[index], 
-                                                             '--cmd_serverToLeafDelay=%lf' % serverToLeafDelay, 
-                                                             '--cmd_leafToSpineDelay=%lf' % leafToSpineDelay,
-                                                             '--cmd_diff=%d' % df,
-                                                             '--cmd_rcvL=%d' % rL,
-                                                             '--cmd_sndL=%d' % sL,
-                                                             '--cmd_special_link_delay=%lf' % special_link_delay,
-                                                             '--cmd_resend_threshold=%d' % threshold,
-#wsq
-                                                             #'--cmd_leafToSpineDelay1=%lf' % leafToSpineDelay1,
-                                                             #'--cmd_leafToSpineDelay2=%lf' % leafToSpineDelay2,
-                                                             '--cmd_special_link_rate=%s' % special_link_rate,
-                                                             '--cmd_messageSize=%d' % ms,
-                                                             '--cmd_traffic_load=%lf' % load,
-                                                             '--cmd_deltaT=%lf' % dT,
-                                                             '--cmd_varyCapacity=%d' % varyCapacity[0], 
-                                                             '--cmd_trafficPattern=%d' % traffic_pattern[tp],
-                                                             '--cmd_special_rate1=%s' % special_rate1[rl],
-                                                             '--cmd_special_rate2=%s' % special_rate2[rl],
-                                                             '--cmd_special_rate3=%s' % special_rate3[rl],
-                                                             '--cmd_special_rate4=%s' % special_rate4[rl],
-#'--cmd_traceFile=%s' % trace_file[tp]], stdout=log_file)
-                                                             '--cmd_traceFile=%s' % trace_file[tp]])
-#log_file.flush() 
-                                        proc.wait()
-                                        #procs.append(proc)
+                                        for tt in threshold:
+                                            proc = subprocess.Popen(['../../../build/scratch/mp_rdma_leaf_spine/mp_rdma_leaf_spine', 
+                                                                '--cmd_serverPerLeaf=%d' % serverPerLeaf, 
+                                                                '--cmd_leafSwitch=%d' % leafSwitch, 
+                                                                '--cmd_spineSwitch=%d' % spineSwitch, 
+                                                                '--cmd_serverToLeafRate=%s' % serverToLeafRate, 
+                                                                '--cmd_leafToSpineRate1=%s' % leafToSpineRate1, 
+                                                                '--cmd_leafToSpineRate2=%s' % leafToSpineRate2, 
+                                                                '--cmd_leafToSpineECN1=%d' % leafToSpineECN1[index], 
+                                                                '--cmd_leafToSpineECN2=%d' % leafToSpineECN2[index], 
+                                                                '--cmd_serverToLeafDelay=%lf' % serverToLeafDelay, 
+                                                                '--cmd_leafToSpineDelay=%lf' % leafToSpineDelay,
+                                                                '--cmd_diff=%d' % df,
+                                                                '--cmd_rcvL=%d' % rL,
+                                                                '--cmd_sndL=%d' % sL,
+                                                                '--cmd_special_link_delay=%lf' % special_link_delay,
+                                                                '--cmd_resend_threshold=%d' % tt,
+    #wsq
+                                                                #'--cmd_leafToSpineDelay1=%lf' % leafToSpineDelay1,
+                                                                #'--cmd_leafToSpineDelay2=%lf' % leafToSpineDelay2,
+                                                                '--cmd_special_link_rate=%s' % special_link_rate,
+                                                                '--cmd_messageSize=%d' % ms,
+                                                                '--cmd_traffic_load=%lf' % load,
+                                                                '--cmd_deltaT=%lf' % dT,
+                                                                '--cmd_varyCapacity=%d' % varyCapacity[0], 
+                                                                '--cmd_trafficPattern=%d' % traffic_pattern[tp],
+                                                                '--cmd_special_rate1=%s' % special_rate1[rl],
+                                                                '--cmd_special_rate2=%s' % special_rate2[rl],
+                                                                '--cmd_special_rate3=%s' % special_rate3[rl],
+                                                                '--cmd_special_rate4=%s' % special_rate4[rl],
+    #'--cmd_traceFile=%s' % trace_file[tp]], stdout=log_file)
+                                                                '--cmd_traceFile=%s' % trace_file[tp]])
+    #log_file.flush() 
+                                            proc.wait()
+                                            #procs.append(proc)
     
 #    for proc in procs: 
 #        proc.wait() 

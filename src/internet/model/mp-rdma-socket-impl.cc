@@ -1975,35 +1975,7 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
             m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
           }
           m_txBuffer->DiscardUpTo(new_head);
-//recode sender_retx
-#if(SENDER_RETX == 1)
-          m_detect = m_txBuffer->HeadSequence () + retx_thresold * m_tcb->m_segmentSize;
-          //if find order ,resend from head
-          if(m_txBuffer->HeadSequence () > m_startsendretx){
-            m_sendretx = false;
-          }
-          if(!m_bReTx && (ackNumber > m_detect) && !m_sendretx){
-            m_sendretx = true;
-            m_High_resend_pos = m_txBuffer->HeadSequence ();
-            m_oversendretx = ackNumber;
-            m_startsendretx = m_txBuffer->HeadSequence ();
-          }
-              // if(ackNumber < m_ooL){
-              //   if(!m_bReTx)
-              //   {
-              //       //printf("into resnd!\n");
-              //       m_bReTx = true;
-              //       m_bRecorySend=true;
-              //       if(m_highReTxMark < m_txBuffer->HeadSequence())
-              //           m_highReTxMark = m_txBuffer->HeadSequence();
 
-              //       m_ooP = m_nextTxSequence - m_tcb->m_segmentSize;
-              //       m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
-
-              //       m_recoveryPoint = m_nextTxSequence;
-              //   }
-              // }
-#endif
           if(m_highReTxMark < new_head)
           {
               m_highReTxMark = new_head;
@@ -2046,7 +2018,35 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
                       m_recoveryPoint.GetValue(), m_nextTxSequence.Get().GetValue(), m_ooP.GetValue(), new_head.GetValue(), m_inflate, m_tcb->m_cWnd.Get());
           }
       }
+//recode sender_retx
+#if(SENDER_RETX == 1)
+          m_detect = m_txBuffer->HeadSequence () + retx_thresold * m_tcb->m_segmentSize;
+          //if find order ,resend from head
+          if(m_txBuffer->HeadSequence () > m_startsendretx){
+            m_sendretx = false;
+          }
+          if(!m_bReTx && (ackNumber > m_detect) && !m_sendretx){
+            m_sendretx = true;
+            m_High_resend_pos = m_txBuffer->HeadSequence ();
+            m_oversendretx = ackNumber;
+            m_startsendretx = m_txBuffer->HeadSequence ();
+          }
+              // if(ackNumber < m_ooL){
+              //   if(!m_bReTx)
+              //   {
+              //       //printf("into resnd!\n");
+              //       m_bReTx = true;
+              //       m_bRecorySend=true;
+              //       if(m_highReTxMark < m_txBuffer->HeadSequence())
+              //           m_highReTxMark = m_txBuffer->HeadSequence();
 
+              //       m_ooP = m_nextTxSequence - m_tcb->m_segmentSize;
+              //       m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
+
+              //       m_recoveryPoint = m_nextTxSequence;
+              //   }
+              // }
+#endif
       /* yuanwei patch 2 */
       if(ackNumber >= m_ooL || retxTag.isReTx)
       //if(ackNumber >= m_ooL)
