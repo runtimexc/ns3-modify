@@ -273,10 +273,11 @@ namespace ns3
                 if(retxTag.isReTx){
                     return ;
                 }
-                uint8_t tcpflags = l4H.GetFlags () & ~(MpRDMAHeader::PSH | MpRDMAHeader::URG);
-                if(tcpflags != 0){
-                    return ;
-                }
+                // uint8_t tcpflags = l4H.GetFlags () & ~(MpRDMAHeader::PSH | MpRDMAHeader::URG);     
+                // // No flags means there is not only data but also special singal
+                // if(tcpflags != 0){
+                //     return ;
+                // }
                 double randNum = rand() % 1000000 / 1000000.0; //wsq annotation
                 //Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();//wsq modify for random
                 //double randNum=uv->GetInteger(0, 1000)/1000;//wsq modify for random
