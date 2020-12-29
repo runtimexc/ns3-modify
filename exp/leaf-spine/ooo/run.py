@@ -29,7 +29,7 @@ leafToSpineECN2 = [54]
 
 serverToLeafDelay = 2.0
 leafToSpineDelay = 2.0
-diffbetweenpath = [2, 3, 4, 5, 6, 10, 15]
+diffbetweenpath = [2]
 #diffbetweenpath = [15]
 #wsq
 #leafToSpineDelay1=2.0
@@ -48,7 +48,7 @@ special_rate4 = ["10Gbps", "80Gbps"]
 #sndL = [32]
 sndL = [16]
 #rcvL = [32, 40, 48, 52, 56, 58, 60, 62, 64, 66, 68]
-rcvL = [128]
+rcvL = [64]
 threshold = 0 
 #rcvL = [32]
 #sndL = [32]

@@ -1976,8 +1976,6 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
           /* move SND.UNA */
           SequenceNumber32 new_head = SequenceNumber32(aackTag.aackSeq);
           //lyj add
-          m_detect = SequenceNumber32(new_head + retx_thresold* m_tcb->m_segmentSize);
-          //lyj add
           if(new_head > m_nextTxSequence){
             //lyj origin
             // m_nextTxSequence = (m_nextTxSequence-m_txBuffer->HeadSequence ())+new_head;
@@ -1988,34 +1986,6 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
             m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
           }
           m_txBuffer->DiscardUpTo(new_head);
-//recode sender_retx
-#if(SENDER_RETX == 1)
-          //if find order ,resend from head
-          if(new_head > m_startsendretx){
-            m_sendretx = false;
-          }
-          if(!m_bReTx && (ackNumber > m_detect) && !m_sendretx){
-            m_sendretx = true;
-            m_High_resend_pos = new_head;
-            m_oversendretx = ackNumber;
-            m_startsendretx = new_head;
-          }
-              // if(ackNumber < m_ooL){
-              //   if(!m_bReTx)
-              //   {
-              //       //printf("into resnd!\n");
-              //       m_bReTx = true;
-              //       m_bRecorySend=true;
-              //       if(m_highReTxMark < m_txBuffer->HeadSequence())
-              //           m_highReTxMark = m_txBuffer->HeadSequence();
-
-              //       m_ooP = m_nextTxSequence - m_tcb->m_segmentSize;
-              //       m_ooL = SequenceNumber32(SafeSubtraction(m_ooP.GetValue(), m_sndL * m_tcb->m_segmentSize));
-
-              //       m_recoveryPoint = m_nextTxSequence;
-              //   }
-              // }
-#endif
           if(m_highReTxMark < new_head)
           {
               m_highReTxMark = new_head;
@@ -2059,6 +2029,27 @@ printf("wsqat node %u, enter CA, cWnd is %u\n", GetNode()->GetId(), m_tcb->m_cWn
               //         m_recoveryPoint.GetValue(), m_nextTxSequence.Get().GetValue(), m_ooP.GetValue(), new_head.GetValue(), m_inflate, m_tcb->m_cWnd.Get());
           }
       }
+//recode sender_retx
+#if(SENDER_RETX == 1)
+          //if find order ,resend from head
+          m_detect = SequenceNumber32(m_txBuffer->HeadSequence() + retx_thresold* m_tcb->m_segmentSize);
+          if(m_txBuffer->HeadSequence() > m_startsendretx){
+            m_sendretx = false;
+          }
+          if(!m_bReTx && (ackNumber > m_detect) && !m_sendretx){
+            m_sendretx = true;
+            m_High_resend_pos = m_txBuffer->HeadSequence();
+            m_oversendretx = ackNumber;
+            m_startsendretx = m_txBuffer->HeadSequence();
+          }
+          if(lyj_print){
+              printf("at node %u, ackNumber is %u m_detect is %u shouldretrans? %u\n ", 
+                      GetNode()->GetId(),
+                      ackNumber.GetValue(),
+                      m_detect.GetValue(),
+                      m_sendretx);
+          }
+#endif
 
       /* yuanwei patch 2 */
       //lyj add
