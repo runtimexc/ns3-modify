@@ -9,6 +9,16 @@ add new variables for new function
     uint32_t retx_thresold;
     SequenceNumber32 m_oversendretx;
     SequenceNumber32 m_startsendretx;
+
+**leaf-spine-topology-helper.h**:
+
+* add new variable: diff
+
+**leaf-spine-topology-helper.cc**:
+
+* initialize diff
+* set unsymmetric path by using diff
+
 **mp-rdma-socket-impl.cc**:
 
 * initialize above variables and add attribute 
